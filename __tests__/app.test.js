@@ -5,6 +5,9 @@ const seed = require('../db/seeds/seed.js');
 const testData = require('../db/data/test-data/index.js')
 
 
+console.log(testData, 'testData')
+
+
 afterAll(() => db.end());
 
 beforeEach(() => seed(testData));

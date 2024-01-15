@@ -5,7 +5,11 @@ const { getTopics } = require('../controllers/topics.controller')
 app.use(express.json());
 
 
-app.get('/api/topics', getTopics);
+app.get('/api/topics', getTopics); // gets the topics data
+
+// app.get('/api', getAllData); // gets all the data 
+
+
 
 app.all('*', (req, res) => {
   res.status(404).send({Status: 404, msg : 'endpoint not found'})
