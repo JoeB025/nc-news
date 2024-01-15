@@ -6,11 +6,6 @@ const testData = require('../db/data/test-data/index.js')
 const endpoints = require('../endpoints.json')
 
 
-// console.log(endPoints)
-
-
-// console.log(testData, 'testData')
-
 
 afterAll(() => db.end());
 
