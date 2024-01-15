@@ -3,9 +3,13 @@ const app = require('../db/app.js');
 const db = require('../db/connection.js');
 const seed = require('../db/seeds/seed.js');
 const testData = require('../db/data/test-data/index.js')
+const endpoints = require('../endpoints.json')
 
 
-console.log(testData, 'testData')
+// console.log(endPoints)
+
+
+// console.log(testData, 'testData')
 
 
 afterAll(() => db.end());
@@ -13,7 +17,7 @@ afterAll(() => db.end());
 beforeEach(() => seed(testData));
 
 
-
+// api/topics 
 describe('app', () => {
   describe('/api/topics', () => {
     test('GET /topics should return a list of all the topics and status code 200', () => {
@@ -45,12 +49,24 @@ describe('app', () => {
 
 
 
+// api 
 
-// errors 
+describe('app', () => {
+  test('GET/ api should return a description of all other endpoints', () => {
+      return request(app)
+      .get('/api')
+      .expect(200)
+      .then((res) => {
+        expect(typeof res).toBe('object')
+        expect(res.body.endpoints).toEqual(endpoints)
 
-  describe('app', () => {
-    describe('/api/topics', () => {
-
+        for (const key in res.body.endpoints) {
+          expect(typeof res.body.endpoints[key].description).toBe('string')
+          if (key !== 'GET /api') {
+          expect(Array.isArray(res.body.endpoints[key].queries)).toBe(true)
+          expect(typeof res.body.endpoints[key].exampleResponse).toBe('object')
+          }
+        }
+      })
     })
-  })
-
+})
