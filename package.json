@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
-    "seed": "PGDATABASE=nc_news",
+    "seed": "node ./db/seeds/run-seed.js",
     "test": "PGDATABASE=nc_news_test jest",
     "prepare": "husky install"
   },
@@ -25,6 +25,7 @@
     "husky": "^8.0.2",
     "jest": "^27.5.1",
     "jest-extended": "^2.0.0",
+    "jest-sorted": "^1.0.14",
     "pg-format": "^1.0.4"
   },
   "dependencies": {

@@ -65,3 +65,64 @@ describe('app', () => {
       })
     })
 })
+
+
+
+// article 
+
+
+describe('app', () => {
+  describe('/api/articles/:article_id', () => {
+    test('GET /articles should return the single requested article object and status code 200', () => {
+      return request(app)
+      .get('/api/articles/1') 
+      .expect(200)
+      .then((res) => {
+       expect(res.body.article.title).toBe('Living in the shadow of a great man')
+       expect(res.body.article.topic).toBe('mitch')
+       expect(res.body.article.author).toBe('butter_bridge')
+       expect(res.body.article.body).toBe('I find this existence challenging')
+       expect(res.body.article.created_at).toBe('2020-07-09T20:11:00.000Z')
+       expect(res.body.article.votes).toBe(100)
+       expect(typeof res.body.article.votes).toBe('number')
+       expect(res.body.article.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700');
+          })
+        })
+
+    test('GET /articles should return the single requested article object and status code 200', () => {
+      return request(app)
+        .get('/api/articles/5') 
+        .expect(200)
+        .then((res) => {
+          expect(res.body.article.title).toBe('UNCOVERED: catspiracy to bring down democracy')
+          expect(res.body.article.topic).toBe('cats')
+          expect(res.body.article.author).toBe('rogersop')
+          expect(res.body.article.body).toBe('Bastet walks amongst us, and the cats are taking arms!');
+          })
+        })
+    test('GET /articles should return a status code 404 with the message endpoint not found', () => {
+      return request(app)
+        .get('/api/no-articles/1') 
+        .expect(404)
+        .then((res) => {
+          expect(res.body).toEqual({Status: 404, msg: 'endpoint not found'})
+          expect(res.body.msg).toBe('endpoint not found')
+          })
+        })
+    test('GET /articles should return a status code 404 with the message endpoint not found', () => {
+      return request(app)
+        .get('/api/articles/999999999') 
+        .expect(400)
+        .then((res) => {
+          expect(res.body).toEqual({status: 400, msg : 'Bad request'})
+          expect(res.body.msg).toBe('Bad request')
+          })
+        })
+      })
+    }) 
+
+
+
+ 
+
+

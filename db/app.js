@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const { getTopics } = require('../controllers/topics.controller')
 const { getAllData } = require('../controllers/api.controller')
+const { getArticles } = require('../controllers/articles.controller')
 
 app.use(express.json());
 
@@ -9,6 +10,8 @@ app.use(express.json());
 app.get('/api/topics', getTopics); // gets the topics data
 
 app.get('/api', getAllData); // gets all the data 
+
+app.get('/api/articles/:article_id', getArticles) // gets the app by ID
 
 
 
