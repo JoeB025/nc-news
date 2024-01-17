@@ -123,6 +123,43 @@ describe('app', () => {
 
 
 
- 
+    // get ordered articles 
 
+    describe('app', () => {
+      describe('/api/articles', () => {
+        test('GET /articles all articles, removing the body key and adding in a count of number of comment. Status code 200', () => {
+          return request(app)
+          .get('/api/articles/') 
+          .expect(200)
+          .then((res) => {
+            res.body.article.forEach((obj) => {
+              expect(typeof obj).toBe('object')
+              expect(typeof Number(obj.number_of_comments)).toBe('number')
+              expect(obj.body).toBe(undefined)
+              expect(typeof obj.author).toBe('string')
+              expect(typeof obj.article_id).toBe('number')
+              })
+            })
+          })
+        test('GET /articles all articles in order by date created and return a status code of 200', () => {
+          return request(app)
+          .get('/api/articles') 
+          .expect(200)
+          .then((res) => {
+            expect(res.body.article).toBeSortedBy('created_at', {descending : true});
+            expect(res.body.article).not.toBeSortedBy('created_at', {ascending : true})
+              })
+            })
+          test('GET /articles should return an error code of 404 with the message endpoint not found ', () => {
+            return request(app)
+            .get('/api/articlessss') 
+            .expect(404)
+            .then((res) => {
+              expect(res.body.msg).toBe('endpoint not found')
+              })
+          })
+        })
+      })
+
+ 
 
