@@ -111,7 +111,7 @@ describe('app', () => {
         })
     test('GET /articles should return a status code 404 with the message endpoint not found', () => {
       return request(app)
-        .get('/api/articles/999999999') 
+        .get('/api/articles/14324234') 
         .expect(400)
         .then((res) => {
           expect(res.body).toEqual({status: 400, msg : 'Bad request'})
@@ -163,3 +163,60 @@ describe('app', () => {
 
  
 
+
+
+
+
+
+
+// /api/articles/:article_id/comments
+
+describe('app', () => {
+  describe('/api/articles/:article_id/comments', () => {
+    test('GET / Check server responds with an array of comments and each required property is present. Status code 200', () => {
+      return request(app)
+      .get('/api/articles/1/comments') 
+      .expect(200)
+      .then((res) => {
+        expect(Array.isArray(res.body.comments)).toBe(true)
+        expect(res.body.comments.length).not.toBe(0)
+
+        res.body.comments.forEach((comment) => {
+          expect(comment.article_id).toBe(1)
+          expect(comment.hasOwnProperty('body')).toBe(true)
+          expect(comment.hasOwnProperty('votes')).toBe(true)
+          expect(typeof comment.votes).toBe('number')
+          expect(comment.hasOwnProperty('created_at')).toBe(true)
+          expect(comment.hasOwnProperty('author')).toBe(true)
+        })
+    })
+  })
+  test('GET / Check comments are ordered with the most recent first. Status code 200', () => {
+    return request(app)
+    .get('/api/articles/1/comments') 
+    .expect(200)
+    .then((res) => {
+      expect(res.body.comments).toBeSortedBy('created_at', {descending : true});
+      expect(res.body.comments).not.toBeSortedBy('invalid_key', {descending : true});
+      expect(res.body.comments).not.toBeSortedBy('created_at', {ascending : true})
+  })
+})
+    test('GET / Check server responds with an error code of 404 when given an endpoint that doesn\'t exist', () => {
+      return request(app)
+      .get('/api/articles/9999/comments') 
+      .expect(400)
+      .then((res) => {
+        console.log(res.body)
+        expect(res.body.msg).toBe('Bad request')
+    })
+  })
+  test('GET /request should return a status code 400 with the message Bad request', () => {
+    return request(app)
+      .get('/api/articles/1/commentsss') 
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe('endpoint not found')
+        })
+      })
+    }) 
+  }) 
