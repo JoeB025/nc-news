@@ -1,5 +1,5 @@
-const { selectArticles, selectOrderedArticles } = require('../models/articles.model')
-
+const { selectArticles, selectOrderedArticles, selectArticleComments } = require('../models/articles.model')
+const { checkArticles } = require('../db/seeds/utils')
 
 exports.getArticles = (req, res, next) => {
   const { article_id } = req.params;
@@ -14,11 +14,30 @@ exports.getArticles = (req, res, next) => {
 
 
 exports.getOrderedArticles = (req, res, next) => {
-  const { sort_by } = req.params
-  const { order } = req.params 
+  const { sort_by } = req.query
+  const { order } = req.query 
 
   selectOrderedArticles(sort_by, order).then((article) => {
     res.status(200).send({ article });
+  })
+  .catch((err) => {
+    next(err)
+  })
+}
+
+
+
+exports.getArticleComments = (req, res, next) => {
+  const { article_id } = req.params
+  const { sort_by } = req.query
+  const { order } = req.query
+
+  const checkForComments = checkArticles(article_id)
+  const sortedComments = selectArticleComments(article_id, sort_by, order)
+
+  Promise.all([checkForComments, sortedComments])
+  .then((comments) => {
+    res.status(200).send({comments : comments[1]});
   })
   .catch((err) => {
     next(err)
