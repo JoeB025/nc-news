@@ -35,7 +35,6 @@ describe('app', () => {
       .get('/api/noTopics')
       .expect(404)
       .then((res) => {
-          expect(res.body).toEqual({Status: 404, msg: 'endpoint not found'})
           expect(res.body.msg).toBe('endpoint not found')
         })
       })
@@ -105,17 +104,15 @@ describe('app', () => {
         .get('/api/no-articles/1') 
         .expect(404)
         .then((res) => {
-          expect(res.body).toEqual({Status: 404, msg: 'endpoint not found'})
           expect(res.body.msg).toBe('endpoint not found')
           })
         })
-    test('GET /articles should return a status code 404 with the message endpoint not found', () => {
+    test('GET /articles should return a status code 404 with the message article does not exist', () => {
       return request(app)
         .get('/api/articles/14324234') 
-        .expect(400)
+        .expect(404)
         .then((res) => {
-          expect(res.body).toEqual({status: 400, msg : 'Bad request'})
-          expect(res.body.msg).toBe('Bad request')
+          expect(res.body.msg).toBe('article does not exist')
           })
         })
       })
@@ -132,6 +129,7 @@ describe('app', () => {
           .get('/api/articles/') 
           .expect(200)
           .then((res) => {
+            expect(res.body.article.length > 0).toBe(true)
             res.body.article.forEach((obj) => {
               expect(typeof obj).toBe('object')
               expect(typeof Number(obj.number_of_comments)).toBe('number')
@@ -184,10 +182,13 @@ describe('app', () => {
         res.body.comments.forEach((comment) => {
           expect(comment.article_id).toBe(1)
           expect(comment.hasOwnProperty('body')).toBe(true)
+          expect(typeof comment.body).toBe('string')
           expect(comment.hasOwnProperty('votes')).toBe(true)
           expect(typeof comment.votes).toBe('number')
           expect(comment.hasOwnProperty('created_at')).toBe(true)
+          expect(typeof comment.created_at).toBe('string')
           expect(comment.hasOwnProperty('author')).toBe(true)
+          expect(typeof comment.author).toBe('string')
         })
     })
   })
@@ -201,22 +202,105 @@ describe('app', () => {
       expect(res.body.comments).not.toBeSortedBy('created_at', {ascending : true})
   })
 })
-    test('GET / Check server responds with an error code of 404 when given an endpoint that doesn\'t exist', () => {
+    test('GET / Check server responds with an error code of 404 when given an article_id that could but does not yet exist', () => {
       return request(app)
-      .get('/api/articles/9999/comments') 
-      .expect(400)
-      .then((res) => {
-        console.log(res.body)
-        expect(res.body.msg).toBe('Bad request')
-    })
-  })
-  test('GET /request should return a status code 400 with the message Bad request', () => {
-    return request(app)
-      .get('/api/articles/1/commentsss') 
+      .get('/api/articles/99999/comments') 
       .expect(404)
       .then((res) => {
-        expect(res.body.msg).toBe('endpoint not found')
+        expect(res.body.msg).toBe('article does not exist')
+    })
+  })
+  test('GET /request should return a status code 400 with the message Bad request when given not given a number for an article_id', () => {
+    return request(app)
+      .get('/api/articles/banana/comments') 
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe('Bad request')
         })
       })
     }) 
   }) 
+
+
+
+
+  // post /api/articles/:article_id/comments 
+
+
+  describe('app', () => {
+    describe('/api/articles/:article_id/comments', () => {
+      test('Check data is posted with correct keys and data', () => {
+        return request(app)
+        .post('/api/articles/9/comments')
+        .send({
+          body : 'this is the body',
+          username : 'butter_bridge'
+        })
+        .expect(201)
+        .then((res) => {
+          expect(res.body.comment[0]).toMatchObject(
+            {
+              comment_id: 19,
+              body: 'this is the body',
+              article_id: 9,
+              author: 'butter_bridge',
+              votes: 0
+            })
+            expect(typeof res.body.comment[0].body).toBe('string')
+            expect(typeof res.body.comment[0].author).toBe('string')
+            expect(res.body.comment[0].hasOwnProperty('created_at')).toBe(true)
+        })
+      })
+      test('POST:404 responds with an appropriate status and error message when provided with an invalid username (no username exists)', () => {
+        return request(app)
+        .post('/api/articles/9/comments')
+        .send({
+          body : 'this is the body',
+          username : 'margarine_bridge'
+        })
+        .expect(404)
+        .then((res) => {
+          console.log(res.body)
+          expect(res.body.msg).toBe('Username not found')
+        })
+      })
+
+      test('POST:400 responds with an appropriate status and error message when not provided with a username', () => {
+        return request(app)
+        .post('/api/articles/9/comments')
+        .send({
+          body : 'this is the body'
+        })
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe('Bad request')
+        })
+      })
+
+      test('POST:404 responds with an appropriate status and error message when provided with an incorrect username (no username exists)', () => {
+        return request(app)
+        .post('/api/bananas/9/comments')
+        .send({
+          body : 'this is the body',
+          username : 'butter_bridge'
+        })
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toBe('endpoint not found')
+        })
+      })
+
+      test('POST:404 responds with an appropriate status and error message when provided with a bad username (no username exists)', () => {
+        return request(app)
+        .post('/api/articles/999/comments')
+        .send({
+          body : 'this is the body',
+          username : 'butter_bridge'
+        })
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toBe('article does not exist')
+        })
+      })
+    })
+  })
