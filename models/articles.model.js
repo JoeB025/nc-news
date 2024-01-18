@@ -1,6 +1,4 @@
 const db = require('../db/connection')
-const app = require('../db/app')
-
 
 
 exports.selectArticles = (article_id) => {
@@ -82,5 +80,26 @@ exports.insertNewComment = ({body, username}, article_id ) => {
 }
 
 
+
+exports.swapComments = (article_id, incComment) => {
+
+  let query =
+  `UPDATE articles
+  SET votes = votes + ${incComment.inc_votes}
+  WHERE article_id = ${article_id} 
+  RETURNING *`
+
+  return db.query(query)
+  .then((result) => {
+
+    if (result.rowCount === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: 'article does not exist'
+      });
+    }
+    return result.rows[0]
+  })
+}
 
 

@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const { getTopics } = require('../controllers/topics.controller')
 const { getAllData } = require('../controllers/api.controller')
-const { getArticles, getOrderedArticles, getArticleComments, insertComments } = require('../controllers/articles.controller')
+const { getArticles, getOrderedArticles, getArticleComments, insertComments, replaceComments } = require('../controllers/articles.controller')
 
 app.use(express.json());
 
@@ -18,6 +18,10 @@ app.get('/api/articles', getOrderedArticles) // gets articles in an ordered form
 app.get('/api/articles/:article_id/comments', getArticleComments)
 
 app.post('/api/articles/:article_id/comments', insertComments)
+
+app.patch('/api/articles/:article_id', replaceComments)
+
+
 
 
 app.all('*', (req, res) => {
@@ -37,7 +41,7 @@ app.use((err, req, res, next) => {
     res.status(404).send({Status: 404, msg : 'article does not exist'})
   } else if (err.code === '23503' && err.detail.includes('user')) {
     res.status(404).send({Status: 404, msg : 'Username not found'})
-  } else if (err.code === '22P02' || err.code === '23502') {
+  } else if (err.code === '22P02' || err.code === '23502' || err.code === '42883' || err.code === '42703') {
   res.status(400).send({msg : 'Bad request'})
   
 } else if (err.status && err.msg) {
