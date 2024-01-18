@@ -406,3 +406,48 @@ describe('app', () => {
         })
     })
   })
+
+
+
+  // delete /api/comments/:comment_id
+  describe('app', () => {
+    describe('/api/comments/:comment_id', () => {
+      test('Check status code returns 204 for valid delete requests', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+        })
+      test('Check returned object is empty', () => {
+        return request(app)
+        .delete('/api/comments/1')
+        .expect(204)
+        .then((res) => {
+          expect(res.body).toEqual({})
+      })
+    })
+      test('Check error 404 for valid requests that do not yet exist', () => {
+        return request(app)
+        .delete('/api/comments/999')
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toBe('article does not exist')
+        })
+      })
+      test('Check for error code 404 for endpoints that do not exist', () => {
+        return request(app)
+        .delete('/api/commentsss/1')
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toBe('endpoint not found')
+        })
+      })
+      test('Check for error code 400 for invalid endpoints', () => {
+        return request(app)
+        .delete('/api/comments/one')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toBe('Bad request')
+        })
+      })
+    })
+  }) 

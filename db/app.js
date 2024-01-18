@@ -3,6 +3,8 @@ const app = express()
 const { getTopics } = require('../controllers/topics.controller')
 const { getAllData } = require('../controllers/api.controller')
 const { getArticles, getOrderedArticles, getArticleComments, insertComments, replaceComments } = require('../controllers/articles.controller')
+const { deleteComments } = require('../controllers/comments.controller')
+
 
 app.use(express.json());
 
@@ -15,13 +17,13 @@ app.get('/api/articles/:article_id', getArticles) // gets the app by ID
 
 app.get('/api/articles', getOrderedArticles) // gets articles in an ordered format 
 
-app.get('/api/articles/:article_id/comments', getArticleComments)
+app.get('/api/articles/:article_id/comments', getArticleComments);
 
-app.post('/api/articles/:article_id/comments', insertComments)
+app.post('/api/articles/:article_id/comments', insertComments);
 
-app.patch('/api/articles/:article_id', replaceComments)
+app.patch('/api/articles/:article_id', replaceComments);
 
-
+app.delete('/api/comments/:comment_id', deleteComments); 
 
 
 app.all('*', (req, res) => {
