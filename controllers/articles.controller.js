@@ -1,4 +1,4 @@
-const { selectArticles, selectOrderedArticles, selectArticleComments, insertNewComment } = require('../models/articles.model')
+const { selectArticles, selectOrderedArticles, selectArticleComments, insertNewComment, swapComments } = require('../models/articles.model')
 const { checkArticles } = require('../db/seeds/utils')
 
 exports.getArticles = (req, res, next) => {
@@ -45,9 +45,6 @@ exports.getArticleComments = (req, res, next) => {
 }
 
 
-
-
-
 // post 
 
 exports.insertComments = (req, res, next) => {
@@ -65,6 +62,23 @@ exports.insertComments = (req, res, next) => {
 
 
 
+
+
+
+// patch 
+
+exports.replaceComments = (req, res, next) => {
+  
+  const { article_id } = req.params 
+  const incComment = req.body 
+  
+swapComments(article_id, incComment)
+.then((article) => {
+  res.status(200).send({article})
+}).catch((err) => {
+  next(err)
+})
+}
 
 
 

@@ -260,11 +260,9 @@ describe('app', () => {
         })
         .expect(404)
         .then((res) => {
-          console.log(res.body)
           expect(res.body.msg).toBe('Username not found')
         })
       })
-
       test('POST:400 responds with an appropriate status and error message when not provided with a username', () => {
         return request(app)
         .post('/api/articles/9/comments')
@@ -289,7 +287,6 @@ describe('app', () => {
           expect(res.body.msg).toBe('endpoint not found')
         })
       })
-
       test('POST:404 responds with an appropriate status and error message when provided with a bad username (no username exists)', () => {
         return request(app)
         .post('/api/articles/999/comments')
@@ -302,5 +299,110 @@ describe('app', () => {
           expect(res.body.msg).toBe('article does not exist')
         })
       })
+    })
+  })
+
+
+
+
+
+
+
+
+// patch /api/articles/:article_id
+
+  describe('app', () => {
+    describe('/api/articles/:article_id', () => {
+      test('Check status code returns 200 for valid patch requests', () => {
+        return request(app)
+        .patch('/api/articles/1')
+        .send({inc_votes : -1})
+        .expect(200)
+        })
+        test('Check votes decrease by one and returns an object containing correct information', () => {
+          return request(app)
+          .patch('/api/articles/1')
+          .send({inc_votes : -1})
+          .expect(200)
+          .then((res) => {
+            expect(res.body.article).toMatchObject({
+              article_id: 1,
+              title: 'Living in the shadow of a great man',
+              topic: 'mitch',
+              author: 'butter_bridge',
+              body: 'I find this existence challenging',
+              votes: 99,
+              article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+            })
+            expect(res.body.article.hasOwnProperty('article_id')).toBe(true)
+            expect(typeof res.body.article.article_id).toBe('number')
+            expect(res.body.article.hasOwnProperty('title')).toBe(true)
+            expect(typeof res.body.article.title).toBe('string')
+            expect(res.body.article.hasOwnProperty('topic')).toBe(true)
+            expect(typeof res.body.article.topic).toBe('string')
+            expect(res.body.article.hasOwnProperty('author')).toBe(true)
+            expect(typeof res.body.article.author).toBe('string')
+            expect(res.body.article.hasOwnProperty('body')).toBe(true)
+            expect(typeof res.body.article.body).toBe('string')
+            expect(res.body.article.hasOwnProperty('votes')).toBe(true)
+            expect(typeof res.body.article.votes).toBe('number')
+            expect(res.body.article.hasOwnProperty('article_img_url')).toBe(true)
+            expect(typeof res.body.article.article_img_url).toBe('string')
+          })
+          })
+          test('Check increment works for a different number', () => {
+            return request(app)
+            .patch('/api/articles/1')
+            .send({inc_votes : +15})
+            .expect(200)
+            .then((res) => {
+              expect(res.body.article.votes).toBe(115)
+          })
+        })
+        test('Check error 404 is returned for incorrect endpoint', () => {
+          return request(app)
+          .patch('/api/pokemon/1')
+          .send({inc_votes : +15})
+          .expect(404)
+          .then((res) => {
+            expect(res.body.msg).toBe('endpoint not found')
+          })
+        })
+        test('Check error 404 for valid requests that do not yet exist', () => {
+          return request(app)
+          .patch('/api/articles/100000')
+          .send({inc_votes : +15})
+          .expect(404)
+          .then((res) => {
+            expect(res.body.msg).toBe('article does not exist')
+          })
+        })
+        test('Check error 400 when passed a string of letters as an incrementor', () => {
+          return request(app)
+          .patch('/api/articles/1')
+          .send({inc_votes : 'one'})
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe('Bad request')
+          })
+        })
+        test('Check error 400 when passed in an invalid incrementor', () => {
+          return request(app)
+          .patch('/api/articles/1')
+          .send({inc_votes : false})
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe('Bad request')
+          })
+        })
+        test('Check error 400 when given incorrect object key', () => {
+          return request(app)
+          .patch('/api/articles/1')
+          .send({increaseMyVoteCount : -1})
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe('Bad request')
+          })
+        })
     })
   })
