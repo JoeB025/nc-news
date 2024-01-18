@@ -1,44 +1,21 @@
 const db = require('../db/connection')
 
-exports.selectComments = () => {
-  return db.query(`SELECT article_id FROM comments;`)
+
+
+exports.removeCommentsBy = (comment_id) => {
+
+  let query =
+  `DELETE FROM comments 
+  WHERE comment_id = $1;`
+
+  return db.query(query, [comment_id])
   .then((result) => {
- return result.rows
-    })
+    if (result.rowCount === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: 'article does not exist'
+      });
+    }
+    return result.rows[0]
+  })
 }
-
-
-
-
-
-
-// exports.selectCommentCount = () => {
-//   return db.query(`SELECT article_id FROM comments;`)
-//   .then((result) => {
-
-// let num = 0
-//     result.rows.forEach((key) => {
-//       if (key.article_id > num) {
-//         num = key.article_id
-//       }
-//     })
-
-// const obj = {}
-// let i = 1
-
-// while (num >= i) {
-//   let count = 0
-//     result.rows.forEach((item) => {
-//       if (item.article_id === i) {
-//         obj[item.article_id] = count++ 
-//       }
-
-//     })
-//     i++
-//   }
-
-// console.log(obj)
-    
-//  return result.rows
-//     })
-// }

@@ -46,7 +46,6 @@ exports.getArticleComments = (req, res, next) => {
 
 
 // post 
-
 exports.insertComments = (req, res, next) => {
   const newComment = req.body;
   const { article_id } = req.params 
@@ -61,12 +60,7 @@ exports.insertComments = (req, res, next) => {
 }; 
 
 
-
-
-
-
 // patch 
-
 exports.replaceComments = (req, res, next) => {
   
   const { article_id } = req.params 
@@ -79,6 +73,17 @@ swapComments(article_id, incComment)
   next(err)
 })
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

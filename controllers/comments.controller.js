@@ -1,10 +1,16 @@
-const { selectComments } = require('../models/comments.model')
+const { removeCommentsBy } = require('../models/comments.model')
 
-exports.getComments = (req, res, next) => {
-  selectComments().then((comment) => {
-    res.status(200).send({ comment });
-  })
-  .catch((err) => {
+
+// delete
+
+exports.deleteComments = (req, res, next) => {
+
+  const { comment_id } = req.params
+
+  removeCommentsBy(comment_id)
+  .then((comment) => {
+    res.status(204).send({comment})
+  }).catch((err) => {
     next(err)
   })
-};
+ }
