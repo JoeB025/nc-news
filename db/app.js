@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const { getTopics } = require('../controllers/topics.controller')
 const { getAllData } = require('../controllers/api.controller')
-const { getArticles, getOrderedArticles, getArticleComments } = require('../controllers/articles.controller')
+const { getArticles, getOrderedArticles, getArticleComments, insertComments } = require('../controllers/articles.controller')
 
 app.use(express.json());
 
@@ -17,15 +17,32 @@ app.get('/api/articles', getOrderedArticles) // gets articles in an ordered form
 
 app.get('/api/articles/:article_id/comments', getArticleComments)
 
+app.post('/api/articles/:article_id/comments', insertComments)
 
 
 app.all('*', (req, res) => {
   res.status(404).send({Status: 404, msg : 'endpoint not found'})
-}) // rejects all promises where and endpoint is not found
+
+}) // rejects all promises where an endpoint is not found
+
+
+
+
 
 app.use((err, req, res, next) => {
-  console.log(err, ' <<<<<<<<< errrrrr')
-  res.status(400).send({status: 400, msg : 'Bad request'})
+  // console.log(err)
+  // console.log(err.code)
+
+  if (err.code === '23503' && err.detail.includes('article_id')) {
+    res.status(404).send({Status: 404, msg : 'article does not exist'})
+  } else if (err.code === '23503' && err.detail.includes('user')) {
+    res.status(404).send({Status: 404, msg : 'Username not found'})
+  } else if (err.code === '22P02' || err.code === '23502') {
+  res.status(400).send({msg : 'Bad request'})
+  
+} else if (err.status && err.msg) {
+    res.status(err.status).send({msg : err.msg})
+}
   next()
 })
 

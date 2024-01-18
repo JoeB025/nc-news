@@ -1,4 +1,5 @@
 const db = require('../db/connection')
+const app = require('../db/app')
 
 
 
@@ -50,6 +51,36 @@ exports.selectArticleComments = (article_id, sort_by = 'created_at', order = 'de
     return result.rows
   })
 }
+
+
+
+// task 7 post 
+
+exports.insertNewComment = ({body, username}, article_id ) => {
+
+// console.log(body)
+// console.log(username)
+// console.log(article_id)
+
+  let query = 
+    `INSERT INTO comments (body, author, article_id)
+    VALUES ($1, $2, $3) 
+    RETURNING *
+    `;
+    return db.query(query, [body, username, article_id])
+    .then((result) => {
+      if (result.rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: 'article does not exist'
+        });
+      }
+    // console.log('in model')
+    return result.rows
+
+})
+}
+
 
 
 
