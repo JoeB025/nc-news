@@ -25,12 +25,25 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Responds with the posted comment",
+    "queries" : [],
+    "exampleResponse" : {}
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Responds with the updated votes property in the article object",
+    "queries" : [],
+    "exampleResponse" : {}
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a comment with a matching :comment_id and returns a 204 status code",
+    "queries" : [],
+    "exampleResponse" : {}
+  },
+  "GET /api/users": {
+    "description": "Responds with an array of objects containing properties of: username, name, avatar_url",
+    "queries" : [],
+    "exampleResponse" : {}
   }
-
-
-
-
-
-
-  
 }

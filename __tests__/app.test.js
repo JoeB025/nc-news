@@ -53,7 +53,6 @@ describe('app', () => {
       .then((res) => {
         expect(typeof res).toBe('object')
         expect(res.body.endpoints).toEqual(endpoints)
-
         for (const key in res.body.endpoints) {
           expect(typeof res.body.endpoints[key].description).toBe('string')
           if (key !== 'GET /api') {
@@ -451,3 +450,39 @@ describe('app', () => {
       })
     })
   }) 
+
+
+// get/api/users
+
+  describe('app', () => {
+    describe('/api/users', () => {
+      test('GET /users should return a list of all the users and status code 200', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.users.length).toBe(4); 
+            res.body.users.forEach((user) => {
+              expect(user.username).hasOwnProperty('username')
+              expect(user.name).hasOwnProperty('name')
+              expect(user.avatar_url).hasOwnProperty('avatar_url')
+              expect(typeof user.username).toBe('string')
+              expect(typeof user.name).toBe('string')
+              expect(typeof user.avatar_url).toBe('string')
+            })
+          })
+        }) 
+      test('GET /request should return an error status code of 404 with the message endpoint not found', () => {
+        return request(app)
+        .get('/api/noUsers')
+        .expect(404)
+        .then((res) => {
+            expect(res.body.msg).toBe('endpoint not found')
+          })
+        })
+      })
+    }) 
+
+
+
+
