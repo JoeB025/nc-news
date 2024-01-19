@@ -1,19 +1,31 @@
 const db = require('../db/connection')
 
 
+
+
+
 exports.selectArticles = (article_id) => {
-  return db
-    .query('SELECT * FROM articles WHERE article_id=$1;', [article_id])
+  
+    let query = `
+    SELECT articles.*,
+    COUNT(comments.comment_id) AS comment_count  
+    FROM articles
+    LEFT JOIN comments ON articles.article_id = comments.article_id 
+    WHERE articles.article_id=$1
+    GROUP BY articles.article_id;`
+
+return db.query(query, [article_id])
     .then((result) => {
       if (result.rows.length === 0) {
         return Promise.reject({
           status: 404,
           msg: 'article does not exist'
-        });
-      }
-      return result.rows[0];
-    });
-};
+        })
+      } 
+    return result.rows[0]
+  }) 
+}
+
 
 
 
@@ -45,8 +57,6 @@ exports.selectOrderedArticles = (sort_by = 'created_at', order = 'desc', topic =
         queryParameters.push(topic)
       }
 
-      // console.log(queryParameters)
-        
       query += 
         ` GROUP BY articles.article_id
          ORDER BY articles.${sort_by} ${order};`
@@ -80,10 +90,6 @@ exports.selectArticleComments = (article_id, sort_by = 'created_at', order = 'de
 
 exports.insertNewComment = ({body, username}, article_id ) => {
 
-// console.log(body)
-// console.log(username)
-// console.log(article_id)
-
   let query = 
     `INSERT INTO comments (body, author, article_id)
     VALUES ($1, $2, $3) 
@@ -97,7 +103,6 @@ exports.insertNewComment = ({body, username}, article_id ) => {
           msg: 'article does not exist'
         });
       }
-    // console.log('in model')
     return result.rows
 
 })

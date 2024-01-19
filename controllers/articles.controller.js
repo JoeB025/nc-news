@@ -1,8 +1,11 @@
 const { selectArticles, selectOrderedArticles, selectArticleComments, insertNewComment, swapComments } = require('../models/articles.model')
 const { checkArticles } = require('../db/seeds/utils')
 
+
 exports.getArticles = (req, res, next) => {
+  
   const { article_id } = req.params;
+
   selectArticles(article_id).then((article) => {
     res.status(200).send({ article });
   })
@@ -14,9 +17,7 @@ exports.getArticles = (req, res, next) => {
 
 
 exports.getOrderedArticles = (req, res, next) => {
-  const { sort_by } = req.query
-  const { order } = req.query
-  const { topic } = req.query  
+  const { sort_by, order, topic } = req.query 
 
   selectOrderedArticles(sort_by, order, topic).then((article) => {
     res.status(200).send({ article });
