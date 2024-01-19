@@ -490,6 +490,7 @@ describe('app', () => {
           .get('/api/articles?topic=mitch')
           .expect(200)
           .then((res) => {
+            expect(res.body.article.length).toBe(12)
             res.body.article.forEach((article) => {
               expect(article.topic).toBe('mitch')
               expect(article.topic).not.toBe('cats')
@@ -501,6 +502,7 @@ describe('app', () => {
           .get('/api/articles?topic=cats')
           .expect(200)
           .then((res) => {
+            expect(res.body.article.length).toBe(1)
             res.body.article.forEach((article) => {
               expect(article.topic).toBe('cats')
               expect(article.topic).not.toBe('mitch')
@@ -512,6 +514,7 @@ describe('app', () => {
           .get('/api/articles')
           .expect(200)
           .then((res) => {
+            expect(res.body.article.length).toBe(13)
             res.body.article.forEach((article) => {
               expect(article.topic === 'cats' || article.topic === 'mitch').toBe(true)
             })
@@ -535,6 +538,59 @@ describe('app', () => {
         })
       }) 
     }) 
+
+
+
+
+
+// add comment count to articles/articles_id 
+
+    describe('app', () => {
+      describe('/api/articles/articles_id', () => {
+        test('GET / should return a comment count column', () => {
+          return request(app)
+          .get('/api/articles/1')
+          .expect(200)
+          .then((res) => {
+              expect(res.body.article.comment_count).toBe('11')
+              expect(res.body.article.article_id).toBe(1)
+              expect(res.body.article.title).toBe('Living in the shadow of a great man')
+              expect(res.body.article.author).toBe('butter_bridge')
+              expect(res.body.article.votes).toBe(100)
+              expect(res.body.article.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700')
+              expect(res.body.article.body).toBe('I find this existence challenging')
+            })
+          })
+          test('GET / should return a comment count column', () => {
+            return request(app)
+            .get('/api/articles/99999')
+            .expect(404)
+            .then((res) => {
+              expect(res.body.msg).toBe('article does not exist')
+            })
+          })
+          test('GET / should return a comment count column', () => {
+            return request(app)
+            .get('/api/bananas/1')
+            .expect(404)
+            .then((res) => {
+              expect(res.body.msg).toBe('endpoint not found')
+            })
+          })
+          test('GET / should return a comment count column', () => {
+            return request(app)
+            .get('/api/articles/badRequest')
+            .expect(400)
+            .then((res) => {
+              expect(res.body.msg).toBe('Bad request')
+            })
+          })
+        })
+      })
+
+
+
+
 
 
 
