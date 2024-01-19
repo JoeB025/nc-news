@@ -15,9 +15,10 @@ exports.getArticles = (req, res, next) => {
 
 exports.getOrderedArticles = (req, res, next) => {
   const { sort_by } = req.query
-  const { order } = req.query 
+  const { order } = req.query
+  const { topic } = req.query  
 
-  selectOrderedArticles(sort_by, order).then((article) => {
+  selectOrderedArticles(sort_by, order, topic).then((article) => {
     res.status(200).send({ article });
   })
   .catch((err) => {
@@ -73,6 +74,7 @@ swapComments(article_id, incComment)
   next(err)
 })
 }
+
 
 
 

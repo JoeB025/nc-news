@@ -17,7 +17,18 @@ exports.selectArticles = (article_id) => {
 
 
 
-exports.selectOrderedArticles = (sort_by = 'created_at', order = 'desc') => {
+exports.selectOrderedArticles = (sort_by = 'created_at', order = 'desc', topic = '') => {
+
+  const validSortQueries = ['created_at']
+  if(!validSortQueries.includes(sort_by)) {
+    return Promise.reject({ status : 400, msg : 'invalid sort_by query'})
+  }
+
+  const validTopicQueries = ['mitch', 'cats', 'paper', '']
+  if(!validTopicQueries.includes(topic)) {
+    return Promise.reject({ status : 400, msg : 'Not a valid topic!'})
+  }
+
   let query = `
         SELECT
         articles.author, articles.title, articles.article_id,
@@ -25,9 +36,22 @@ exports.selectOrderedArticles = (sort_by = 'created_at', order = 'desc') => {
         COUNT(comments.article_id) AS number_of_comments
         FROM articles
         LEFT JOIN comments ON articles.article_id = comments.article_id
-        GROUP BY articles.article_id
-        ORDER BY ${sort_by} ${order};`
-    return db.query(query).then((result) => {
+        `;
+
+      const queryParameters = [];
+
+      if(topic) {   
+        query += ` WHERE topic = $1`;
+        queryParameters.push(topic)
+      }
+
+      // console.log(queryParameters)
+        
+      query += 
+        ` GROUP BY articles.article_id
+         ORDER BY articles.${sort_by} ${order};`
+         
+    return db.query(query, queryParameters).then((result) => {
         return result.rows
     })
 }
@@ -80,7 +104,6 @@ exports.insertNewComment = ({body, username}, article_id ) => {
 }
 
 
-
 exports.swapComments = (article_id, incComment) => {
 
   let query =
@@ -101,5 +124,11 @@ exports.swapComments = (article_id, incComment) => {
     return result.rows[0]
   })
 }
+
+
+
+
+
+
 
 

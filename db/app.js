@@ -30,6 +30,10 @@ app.get('/api/users', getUsers);
 
 
 
+
+
+
+
 app.all('*', (req, res) => {
   res.status(404).send({Status: 404, msg : 'endpoint not found'})
 
@@ -42,6 +46,7 @@ app.all('*', (req, res) => {
 app.use((err, req, res, next) => {
   // console.log(err)
   // console.log(err.code)
+  // console.log(err.detail)
 
   if (err.code === '23503' && err.detail.includes('article_id')) {
     res.status(404).send({Status: 404, msg : 'article does not exist'})
