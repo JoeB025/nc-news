@@ -463,9 +463,6 @@ describe('app', () => {
         .then((res) => {
           expect(res.body.users.length).toBe(4); 
             res.body.users.forEach((user) => {
-              expect(user.username).hasOwnProperty('username')
-              expect(user.name).hasOwnProperty('name')
-              expect(user.avatar_url).hasOwnProperty('avatar_url')
               expect(typeof user.username).toBe('string')
               expect(typeof user.name).toBe('string')
               expect(typeof user.avatar_url).toBe('string')
@@ -483,6 +480,61 @@ describe('app', () => {
       })
     }) 
 
+
+
+
+    describe('app', () => {
+      describe('/api/articles', () => {
+        test('GET / request should only get articles with the topic of mitch', () => {
+          return request(app)
+          .get('/api/articles?topic=mitch')
+          .expect(200)
+          .then((res) => {
+            res.body.article.forEach((article) => {
+              expect(article.topic).toBe('mitch')
+              expect(article.topic).not.toBe('cats')
+            })
+          })
+        })
+        test('GET / request should only get articles with the topic of cats', () => {
+          return request(app)
+          .get('/api/articles?topic=cats')
+          .expect(200)
+          .then((res) => {
+            res.body.article.forEach((article) => {
+              expect(article.topic).toBe('cats')
+              expect(article.topic).not.toBe('mitch')
+            })
+          })
+        })
+        test('GET / request should only all articles when no topic is specified', () => {
+          return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then((res) => {
+            res.body.article.forEach((article) => {
+              expect(article.topic === 'cats' || article.topic === 'mitch').toBe(true)
+            })
+          })
+        })
+        test('GET / request should return a 400 for an invalid topic', () => {
+          return request(app)
+          .get('/api/articles?topic=dogs')
+          .expect(400)
+          .then((res) => {
+            expect(res.body.msg).toBe('Not a valid topic!')
+          })
+        })
+        test('GET / request should return a 400 for an invalid topic', () => {
+          return request(app)
+          .get('/api/bananas?topic=cats')
+          .expect(404)
+          .then((res) => {
+            expect(res.body.msg).toBe('endpoint not found')
+          })
+        })
+      }) 
+    }) 
 
 
 
