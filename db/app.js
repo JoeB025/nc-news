@@ -5,8 +5,10 @@ const { getAllData } = require('../controllers/api.controller')
 const { getArticles, getOrderedArticles, getArticleComments, insertComments, replaceComments } = require('../controllers/articles.controller')
 const { deleteComments } = require('../controllers/comments.controller')
 const { getUsers } = require('../controllers/users.controller')
+const cors = require('cors');
 
 
+app.use(cors());
 app.use(express.json());
 
 

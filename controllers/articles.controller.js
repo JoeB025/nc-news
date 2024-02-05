@@ -16,6 +16,12 @@ exports.getArticles = (req, res, next) => {
 
 
 
+
+
+
+
+
+
 exports.getOrderedArticles = (req, res, next) => {
   const { sort_by, order, topic } = req.query 
 
@@ -26,6 +32,14 @@ exports.getOrderedArticles = (req, res, next) => {
     next(err)
   })
 }
+
+
+
+
+
+
+
+
 
 
 
